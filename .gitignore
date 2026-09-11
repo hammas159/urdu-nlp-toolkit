@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+
+# Env & secrets
+.env
+.env.local
+*.key
+
+# Data & models - never commit these
+data/raw/*
+data/processed/*
+!data/**/.gitkeep
+
+models/
+.cache/
+
+# Eval output
+eval_runs/
+*.db
+
+# Node
+node_modules/
+.next/
+
+# OS
+.DS_Store
+Thumbs.db
