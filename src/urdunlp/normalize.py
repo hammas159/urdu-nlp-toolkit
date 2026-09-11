@@ -44,12 +44,12 @@ URDU_DIGITS = {chr(0x06F0 + i): str(i) for i in range(10)}
 
 # Punctuation that has an Urdu-specific form.
 URDU_PUNCTUATION = {
-    "،": ",",   # ARABIC COMMA
-    "؛": ";",   # ARABIC SEMICOLON
-    "؟": "?",   # ARABIC QUESTION MARK
-    "۔": ".",   # URDU FULL STOP
-    "٫": ".",   # ARABIC DECIMAL SEPARATOR
-    "٬": ",",   # ARABIC THOUSANDS SEPARATOR
+    "،": ",",  # ARABIC COMMA
+    "؛": ";",  # ARABIC SEMICOLON
+    "؟": "?",  # ARABIC QUESTION MARK
+    "۔": ".",  # URDU FULL STOP
+    "٫": ".",  # ARABIC DECIMAL SEPARATOR
+    "٬": ",",  # ARABIC THOUSANDS SEPARATOR
 }
 
 # Harakat / diacritics. Optional in Urdu, almost always absent, and their presence in

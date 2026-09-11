@@ -41,9 +41,7 @@ def is_stopword(word: str, *, include_negation: bool = False) -> bool:
     return word in STOPWORDS
 
 
-def remove_stopwords(
-    tokens: list[str], *, include_negation: bool = False
-) -> list[str]:
+def remove_stopwords(tokens: list[str], *, include_negation: bool = False) -> list[str]:
     """Filter a token list.
 
     `include_negation=True` removes negation too. Do that only for topic modelling

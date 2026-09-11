@@ -118,9 +118,7 @@ class TestStopwords:
         assert "نہیں" in remove_stopwords(words("یہ اچھا نہیں ہے"))
 
     def test_negation_can_be_removed_explicitly(self):
-        assert "نہیں" not in remove_stopwords(
-            words("یہ اچھا نہیں ہے"), include_negation=True
-        )
+        assert "نہیں" not in remove_stopwords(words("یہ اچھا نہیں ہے"), include_negation=True)
 
 
 class TestTransliteration:
