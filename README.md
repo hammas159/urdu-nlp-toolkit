@@ -136,3 +136,47 @@ Stated plainly, because a toolkit that overclaims wastes its users' time:
 ## License
 
 MIT
+
+---
+
+## Run it yourself
+
+```bash
+git clone https://github.com/hammas159/urdu-nlp-toolkit
+cd urdu-nlp-toolkit
+
+pip install -e .        # no dependencies to resolve
+pytest -q               # 40 tests, ~1 second
+```
+
+```python
+from urdunlp import normalize, transliterate_to_urdu, words, remove_stopwords
+
+normalize("كتاب")                          # 'کتاب'
+transliterate_to_urdu("main theek hoon")   # 'میں ٹھیک ہوں'
+words("کیا، واقعی؟", keep_punctuation=True)
+remove_stopwords(words("یہ اچھا نہیں ہے")) # ['اچھا', 'نہیں'] — negation kept
+```
+
+Works on Python 3.10–3.13, Linux and Windows. No models, no downloads, no GPU.
+
+## Problems hit while building this
+
+**Urdu punctuation lives inside the Arabic letter block.** The obvious range `؀-ۿ`
+silently swallows `،` `؟` `۔` into word tokens, so `words("کیا، واقعی؟")` returned
+`['کیا،', 'واقعی؟']` — punctuation glued to words, which corrupts every downstream
+count. *Fixed* by enumerating letter sub-ranges that skip each punctuation codepoint
+individually.
+
+**`ھ` was treated as a standalone consonant.** It marks *aspiration* on the letter
+before it — `کھ` is one sound — so inserting a vowel around it turned کھانا into
+`kahana` instead of `khana`. *Fixed* by excluding it from vowel insertion, with a test.
+
+**Short vowels do not exist in written Urdu.** A literal character mapping gives `jmlh`
+for جملہ, which no Roman Urdu reader would write. *Fixed* with a heuristic `a`
+insertion between consonants — right more often than not, and switchable off, because
+pretending a heuristic is a rule is how a toolkit loses trust.
+
+**Negation was almost a stopword.** The first stopword list included `نہیں`. That
+single word carries the meaning of a sentence, and removing it inverts every sentiment
+label. *Fixed* by holding negation in a separate set that is preserved by default.
