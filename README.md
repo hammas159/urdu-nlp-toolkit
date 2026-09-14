@@ -1,24 +1,41 @@
-# urdu-nlp-toolkit (Python, zero dependencies)
+<h1 align="center">urdu-nlp-toolkit</h1>
+<p align="center"><i>Urdu and Roman Urdu text processing. Pure Python, zero dependencies, no model downloads</i></p>
 
-[![ci](https://github.com/hammas159/urdu-nlp-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/hammas159/urdu-nlp-toolkit/actions/workflows/ci.yml)
-![python](https://img.shields.io/badge/python-3.10%2B-blue)
-![dependencies](https://img.shields.io/badge/dependencies-none-success)
-![license](https://img.shields.io/badge/license-MIT-green)
+<p align="center">
+  <a href="#why-this-exists">Why this exists</a> &middot;
+  <a href="#what-it-does">What it does</a> &middot;
+  <a href="#install">Install</a> &middot;
+  <a href="#known-limits">Known limits</a> &middot;
+  <a href="#problems-hit-while-building-this">Problems hit</a>
+</p>
 
-**Urdu and Roman Urdu text processing. Pure Python, zero dependencies, no model
-downloads.**
-
-```python
-from urdunlp import normalize, transliterate_to_urdu, words
-
-normalize("كتاب")                        # 'کتاب'   Arabic kaf -> Urdu keheh
-transliterate_to_urdu("main theek hoon") # 'میں ٹھیک ہوں'
-words("کیا، واقعی؟", keep_punctuation=True)  # ['کیا', '،', 'واقعی', '؟']
-```
+<p align="center">
+  <a href="https://github.com/hammas159/urdu-nlp-toolkit/actions/workflows/ci.yml"><img src="https://github.com/hammas159/urdu-nlp-toolkit/actions/workflows/ci.yml/badge.svg" alt="ci"></a>
+  <img src="https://img.shields.io/badge/python-3.11%2B-blue" alt="python">
+  <img src="https://img.shields.io/badge/dependencies-zero-success" alt="deps">
+  <img src="https://img.shields.io/badge/model%20downloads-none-success" alt="downloads">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="license"></a>
+</p>
 
 ---
 
 ## Why this exists
+
+```mermaid
+flowchart LR
+    I["raw Urdu or<br/>Roman Urdu text"] --> N["normalise<br/>Unicode, diacritics, digits"]
+    N --> T["transliterate<br/>Roman to Urdu script"]
+    N --> W["word segmentation"]
+    T --> O["clean, consistent text"]
+    W --> O
+
+    style O fill:#16a34a,color:#fff
+```
+
+**Zero dependencies and no model downloads.** Urdu tooling usually assumes a GPU and a
+multi-gigabyte model; most preprocessing does not need either, and requiring them puts the
+language behind a hardware barrier that English does not have.
+
 
 Urdu is the national language of a country of 240 million people, and the tooling for
 it is close to nonexistent. Every Urdu project starts by rewriting the same four
@@ -132,6 +149,10 @@ Stated plainly, because a toolkit that overclaims wastes its users' time:
   splitter does more damage than an incomplete one.
 - **No stemmer or lemmatiser.** Urdu morphology needs a lexicon that does not exist
   openly. Use `character_ngrams` as the cheap substitute.
+
+## Keywords
+
+Urdu NLP &middot; Roman Urdu &middot; transliteration &middot; Unicode normalisation &middot; text preprocessing &middot; tokenization &middot; word segmentation &middot; low-resource languages &middot; South Asian languages &middot; Nastaliq &middot; Arabic script &middot; zero dependencies &middot; pure Python &middot; diacritics &middot; language tooling
 
 ## License
 
