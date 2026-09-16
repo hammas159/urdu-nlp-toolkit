@@ -189,10 +189,7 @@ class TestTransliteration:
     def test_identifiers_do_not_count_against_lexicon_coverage(self):
         """A URL is not a word the lexicon failed to resolve."""
         assert transliterate_with_confidence("main theek hoon").lexicon_coverage == 1.0
-        assert (
-            transliterate_with_confidence("main theek hoon http://x.co").lexicon_coverage
-            == 1.0
-        )
+        assert transliterate_with_confidence("main theek hoon http://x.co").lexicon_coverage == 1.0
 
     def test_aspiration_does_not_take_a_vowel(self):
         """ھ marks aspiration on the letter before it - کھ is one sound, not two."""

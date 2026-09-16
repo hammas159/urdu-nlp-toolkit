@@ -4,6 +4,7 @@
 
 Prints what went in and what each stage produced. No arguments, no network.
 """
+
 import sys
 
 if hasattr(sys.stdout, "reconfigure"):  # Urdu will not survive a cp1252 console
@@ -44,8 +45,10 @@ for name, value in stages:
     shown = " ".join(value) if isinstance(value, list) else value
     print(f"   {name:24} {shown}")
 print()
-print(f"   {len(toks)} tokens in, {len(content)} content words out "
-      f"({len(toks) - len(content)} stopwords removed)")
+print(
+    f"   {len(toks)} tokens in, {len(content)} content words out "
+    f"({len(toks) - len(content)} stopwords removed)"
+)
 
 # The other direction, on text that still has its URL and mention attached.
 # A transliterated URL is a broken URL, so identifiers pass through untouched
