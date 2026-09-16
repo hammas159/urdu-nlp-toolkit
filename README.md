@@ -146,7 +146,16 @@ remove_stopwords           کل لاہور آیا
 transliterate_to_roman     min kal lahor se aaia hon.
 
 6 tokens in, 3 content words out (3 stopwords removed)
+
+Roman -> Urdu, with identifiers left alone:
+   dekho http://x.co par    ->  دےکھو http://x.co پر
+   @ali ne kaha             ->  @ali نے کہا
+   lahore                   ->  لاہور
 ```
+
+*A transliterated URL is a broken URL, so URLs, emails, `@mentions` and `#hashtags` pass
+through untouched. Ordinary English words do **not**: `lahore` gives لاہور, because Roman
+Urdu is written in English letters and the two cannot be told apart by spelling.*
 
 *Shown as text, not a screenshot: Urdu is a joining right-to-left script, and an image
 renderer without HarfBuzz shaping produces disconnected letters in the wrong order.*
@@ -159,7 +168,7 @@ renderer without HarfBuzz shaping produces disconnected letters in the wrong ord
 pytest
 ```
 
-**40 tests.** Each encodes a real property of the language rather than a convenient
+**49 tests.** Each encodes a real property of the language rather than a convenient
 example, so a failure means the library is wrong about Urdu, not about a fixture.
 
 ## Known limits
@@ -169,6 +178,11 @@ Stated plainly, because a toolkit that overclaims wastes its users' time:
 - **Roman → Urdu is ambiguous by nature.** `sher` is شیر (lion) or شعر (couplet).
   Outside the lexicon it is a best-effort guess, and `lexicon_coverage` tells you how
   much of a given string was guessed.
+- **English words inside Roman Urdu are transliterated too.** `lahore` → لاہور is
+  correct; `hello` → ہےللو is not, and nothing in the spelling distinguishes them.
+  Only *identifiers* — URLs, emails, `@mentions`, `#hashtags` — are recognised by
+  syntax and passed through untouched. Strip English spans yourself if you have a
+  reliable way to find them.
 - **Urdu → Roman is lossy and one-way.** س ص ث all give `s`; the merge cannot be
   undone.
 - **Short vowels are inserted heuristically.** Urdu does not write them, so a literal
@@ -197,7 +211,7 @@ git clone https://github.com/hammas159/urdu-nlp-toolkit
 cd urdu-nlp-toolkit
 
 pip install -e .        # no dependencies to resolve
-pytest -q               # 40 tests, ~1 second
+pytest -q               # 49 tests, ~1 second
 ```
 
 ```python

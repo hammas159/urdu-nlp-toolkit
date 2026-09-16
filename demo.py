@@ -14,7 +14,7 @@ sys.path.insert(0, "src")
 from urdunlp.normalize import normalize, remove_urls_and_mentions
 from urdunlp.stopwords import remove_stopwords
 from urdunlp.tokenize import words
-from urdunlp.translit import transliterate_to_roman
+from urdunlp.translit import transliterate_to_roman, transliterate_to_urdu
 
 # Deliberately messy: Arabic kaf and yeh rather than Urdu, doubled spaces, a URL,
 # an English mention.
@@ -46,3 +46,11 @@ for name, value in stages:
 print()
 print(f"   {len(toks)} tokens in, {len(content)} content words out "
       f"({len(toks) - len(content)} stopwords removed)")
+
+# The other direction, on text that still has its URL and mention attached.
+# A transliterated URL is a broken URL, so identifiers pass through untouched
+# while the words around them convert.
+print()
+print("   Roman -> Urdu, with identifiers left alone:")
+for probe in ("dekho http://x.co par", "@ali ne kaha", "lahore"):
+    print(f"      {probe:24} -> {transliterate_to_urdu(probe)}")

@@ -426,11 +426,32 @@ URDU_TO_ROMAN: dict[str, str] = {
 _ROMAN_TOKEN = re.compile(r"[A-Za-z]+|\d+|[^\sA-Za-z\d]+")
 _SORTED_RULES = sorted(RULES, key=lambda r: -len(r[0]))
 
+# Spans that are identifiers rather than words, and must survive untouched.
+#
+# Without this, the tokeniser splits `http://x.co` into `http`, `://`, `x`, `co`,
+# transliterates the three alphabetic pieces, and returns `ہتتپ:// کس. کو` - a URL
+# that no longer resolves. The same applies to @mentions, #hashtags and emails.
+#
+# This deliberately does NOT skip ordinary English words. `lahore` -> لاہور is the
+# function working correctly, and a Roman Urdu sentence is full of words that are
+# also English. Only spans whose *syntax* marks them as identifiers are protected.
+_PASSTHROUGH = re.compile(
+    r"""(
+        https?://\S+                      # http(s) URL
+      | www\.\S+                          # bare www URL
+      | \b[\w.+-]+@[\w-]+\.[\w.-]+\b      # email
+      | [@#]\w+                           # mention or hashtag
+    )""",
+    re.VERBOSE,
+)
+
 
 @dataclass
 class Transliteration:
     text: str
-    # Per token: "lexicon" (trusted) or "rules" (best effort) or "passthrough".
+    # Per token: "lexicon" (trusted), "rules" (best effort), "passthrough"
+    # (punctuation and digits) or "identifier" (a URL, email, @mention or
+    # #hashtag, emitted verbatim).
     sources: list[tuple[str, str]]
 
     @property
@@ -463,18 +484,26 @@ def transliterate_with_confidence(text: str) -> Transliteration:
     pieces: list[str] = []
     sources: list[tuple[str, str]] = []
 
-    for token in _ROMAN_TOKEN.findall(text):
-        if not token.isalpha():
-            pieces.append(token)
-            sources.append((token, "passthrough"))
+    # re.split with a capturing group alternates: text, identifier, text, ...
+    for index, segment in enumerate(_PASSTHROUGH.split(text)):
+        if not segment:
             continue
-        lowered = token.lower()
-        if lowered in LEXICON:
-            pieces.append(LEXICON[lowered])
-            sources.append((token, "lexicon"))
-        else:
-            pieces.append(_apply_rules(token))
-            sources.append((token, "rules"))
+        if index % 2:  # an odd index is a captured identifier - emit it verbatim
+            pieces.append(segment)
+            sources.append((segment, "identifier"))
+            continue
+        for token in _ROMAN_TOKEN.findall(segment):
+            if not token.isalpha():
+                pieces.append(token)
+                sources.append((token, "passthrough"))
+                continue
+            lowered = token.lower()
+            if lowered in LEXICON:
+                pieces.append(LEXICON[lowered])
+                sources.append((token, "lexicon"))
+            else:
+                pieces.append(_apply_rules(token))
+                sources.append((token, "rules"))
 
     # Join with spaces, but keep *punctuation* attached to the word before it.
     # Digits are their own words and must not be glued on: "main 25 saal" would
@@ -488,7 +517,12 @@ def transliterate_with_confidence(text: str) -> Transliteration:
 
 
 def transliterate_to_urdu(text: str) -> str:
-    """Roman Urdu to Urdu script."""
+    """Roman Urdu to Urdu script.
+
+    URLs, emails, @mentions and #hashtags are passed through unchanged. Ordinary
+    English words are not: `lahore` gives لاہور, because Roman Urdu is written in
+    English letters and the two cannot be told apart by spelling.
+    """
     return transliterate_with_confidence(text).text
 
 

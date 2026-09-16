@@ -152,6 +152,48 @@ class TestTransliteration:
     def test_digits_are_not_glued_to_the_previous_word(self):
         assert transliterate_to_urdu("main 25 saal ka hoon") == "میں 25 سال کا ہوں"
 
+    @pytest.mark.parametrize(
+        "identifier",
+        [
+            "http://x.co",
+            "https://example.com/a/b?q=1",
+            "www.dawn.com",
+            "@ali",
+            "#lahore",
+            "ali@example.com",
+        ],
+    )
+    def test_identifiers_survive_transliteration(self, identifier):
+        """A transliterated URL is a broken URL.
+
+        The tokeniser splits `http://x.co` into `http`, `://`, `x`, `co`; three of
+        those are alphabetic, so without a guard they are transliterated and the
+        result no longer resolves.
+        """
+        assert transliterate_to_urdu(identifier) == identifier
+
+    def test_identifier_inside_a_sentence_leaves_the_sentence_translated(self):
+        """Protecting the URL must not stop the words around it converting."""
+        out = transliterate_to_urdu("dekho http://x.co par")
+        assert "http://x.co" in out
+        assert "پر" in out
+
+    def test_ordinary_english_words_still_transliterate(self):
+        """The guard is for identifiers only.
+
+        Roman Urdu is written in English letters, so skipping anything that looks
+        English would disable the function. `lahore` is a word, not an identifier.
+        """
+        assert transliterate_to_urdu("lahore") == "لاہور"
+
+    def test_identifiers_do_not_count_against_lexicon_coverage(self):
+        """A URL is not a word the lexicon failed to resolve."""
+        assert transliterate_with_confidence("main theek hoon").lexicon_coverage == 1.0
+        assert (
+            transliterate_with_confidence("main theek hoon http://x.co").lexicon_coverage
+            == 1.0
+        )
+
     def test_aspiration_does_not_take_a_vowel(self):
         """ھ marks aspiration on the letter before it - کھ is one sound, not two."""
         assert transliterate_to_roman("کھانا") == "khana"
