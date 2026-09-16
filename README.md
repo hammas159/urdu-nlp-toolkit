@@ -123,6 +123,36 @@ pip install urdu-nlp-toolkit
 No dependencies, deliberately. This is the layer other Urdu projects sit on, and a
 dependency here becomes a dependency of all of them.
 
+---
+
+## Input
+
+One deliberately messy sentence: Arabic `ک` and `ی` rather than the Urdu forms, doubled
+spaces, a URL and an English mention.
+
+```
+میں  کل  لاہور  سے  آیا  ہوں۔ http://x.co @ali
+```
+
+## Output
+
+`python demo.py`
+
+```
+remove_urls_and_mentions   میں کل لاہور سے آیا ہوں۔
+normalize                  میں کل لاہور سے آیا ہوں۔
+words                      میں کل لاہور سے آیا ہوں
+remove_stopwords           کل لاہور آیا
+transliterate_to_roman     min kal lahor se aaia hon.
+
+6 tokens in, 3 content words out (3 stopwords removed)
+```
+
+*Shown as text, not a screenshot: Urdu is a joining right-to-left script, and an image
+renderer without HarfBuzz shaping produces disconnected letters in the wrong order.*
+
+---
+
 ## Tests
 
 ```bash
