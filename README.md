@@ -1,4 +1,4 @@
-<h1 align="center">urdu-nlp-toolkit</h1>
+<h1 align="center">urdu-nlp-toolkit (Python · Unicode normalisation · transliteration)</h1>
 <p align="center"><i>Urdu and Roman Urdu text processing. Pure Python, zero dependencies, no model downloads</i></p>
 
 <p align="center">
